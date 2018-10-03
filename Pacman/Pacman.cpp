@@ -55,6 +55,7 @@ bool Pacman::Init()
 	myDrawer->LoadTexture("open_up_32.png", ETextureId::AVATAR_OPEN_UP);
 	myDrawer->LoadTexture("open_down_32.png", ETextureId::AVATAR_OPEN_DOWN);
 	myDrawer->LoadTexture("playfield.png", ETextureId::PLAYFIELD);
+	myDrawer->LoadFont("freefont-ttf\\sfd\\FreeMono.ttf", 24);
 	myWorld->Init();
 
 	return true;
@@ -67,12 +68,14 @@ bool Pacman::Update(float aTime)
 
 	if (CheckEndGameCondition())
 	{
-		myDrawer->DrawText("You win!", "freefont-ttf\\sfd\\FreeMono.ttf", 20, 70);
+		//myDrawer->DrawText("You win!", "freefont-ttf\\sfd\\FreeMono.ttf", 20, 70);
+		myDrawer->DrawText("You win!", 20, 70);
 		return true;
 	}
 	else if (myLives <= 0)
 	{
-		myDrawer->DrawText("You lose!", "freefont-ttf\\sfd\\FreeMono.ttf", 20, 70);	
+		//myDrawer->DrawText("You lose!", "freefont-ttf\\sfd\\FreeMono.ttf", 20, 70);	
+		myDrawer->DrawText("You lose!", 20, 70);
 		return true;
 	}
 
@@ -93,7 +96,7 @@ bool Pacman::Update(float aTime)
 		myGhost->ChangeClaimableState(true);
 	}
 	//----------------------------------------------
-	printf("%f\n", myGhostGhostCounter);
+	//printf("%f\n", myGhostGhostCounter);
 	//Move this to Ghost update ------------------------
 	if (myGhostGhostCounter <= 0)
 	{
@@ -168,26 +171,32 @@ bool Pacman::Draw()
 	myAvatar->Draw(myDrawer);
 	myGhost->Draw(myDrawer);
 
-	/*std::string scoreString;
+	std::string scoreString;
 	std::stringstream scoreStream;
 	scoreStream << myScore;
 	scoreString = scoreStream.str();
-	myDrawer->DrawText("Score", "freefont-ttf\\sfd\\FreeMono.ttf", 20, 50);
-	myDrawer->DrawText(scoreString.c_str(), "freefont-ttf\\sfd\\FreeMono.ttf", 90, 50);
+	myDrawer->DrawText("Score", 20, 50);
+	myDrawer->DrawText(scoreString.c_str(), 90, 50);
+	/*myDrawer->DrawText("Score", "freefont-ttf\\sfd\\FreeMono.ttf", 20, 50);
+	myDrawer->DrawText(scoreString.c_str(), "freefont-ttf\\sfd\\FreeMono.ttf", 90, 50);*/
 
 	std::string livesString;
 	std::stringstream liveStream;
 	liveStream << myLives;
 	livesString = liveStream.str();
-	myDrawer->DrawText("Lives", "freefont-ttf\\sfd\\FreeMono.ttf", 20, 80);
-	myDrawer->DrawText(livesString.c_str(), "freefont-ttf\\sfd\\FreeMono.ttf", 90, 80);
+	myDrawer->DrawText("Lives", 20, 80);
+	myDrawer->DrawText(livesString.c_str(), 90, 80);
+	/*myDrawer->DrawText("Lives", "freefont-ttf\\sfd\\FreeMono.ttf", 20, 80);
+	myDrawer->DrawText(livesString.c_str(), "freefont-ttf\\sfd\\FreeMono.ttf", 90, 80);*/
 
-	myDrawer->DrawText("FPS", "freefont-ttf\\sfd\\FreeMono.ttf", 880, 50);*/
+	myDrawer->DrawText("FPS", 880, 50);
+	//myDrawer->DrawText("FPS", "freefont-ttf\\sfd\\FreeMono.ttf", 880, 50);
 	std::string fpsString;
 	std::stringstream fpsStream;
 	fpsStream << myFps;
 	fpsString = fpsStream.str();
-	myDrawer->DrawText(fpsString.c_str(), "freefont-ttf\\sfd\\FreeMono.ttf", 930, 50);
+	myDrawer->DrawText(fpsString.c_str(), 930, 50);
 
+	printf("%s\n", fpsString.c_str());
 	return true;
 }

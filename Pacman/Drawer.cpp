@@ -1,7 +1,7 @@
 #include "Drawer.h"
 #include "SDL.h"
 #include "SDL_image.h"
-#include "SDL_ttf.h"
+
 
 Drawer* Drawer::Create(SDL_Window* aWindow, SDL_Renderer* aRenderer)
 {
@@ -26,6 +26,12 @@ Drawer::Drawer(SDL_Window* aWindow, SDL_Renderer* aRenderer)
 Drawer::~Drawer(void)
 {
 	//DELETE ALL TEXTURES FROM MAP!!
+	for (map<ETextureId, myTexture*>::iterator itr = myTextures.begin(); itr != myTextures.end(); itr++)
+	{
+		delete (itr->second);
+	}
+	myTextures.clear();
+	TTF_CloseFont(font);
 }
 
 bool Drawer::Init()
@@ -71,13 +77,12 @@ void Drawer::Draw(ETextureId aTextureId, const int &aCellX, const int &aCellY) c
 
 }
 
-void Drawer::DrawText(const char* aText, const char* aFontFile, int aX, int aY)
+void Drawer::DrawText(const char* aText, int aX, int aY)
 {
-	TTF_Font* font=TTF_OpenFont(aFontFile, 24);
+	//TTF_Font* font=TTF_OpenFont(aFontFile, 24);
+	SDL_Color fontColor={255,0,0,255};
 
-	SDL_Color fg={255,0,0,255};
-	SDL_Surface* surface = TTF_RenderText_Solid(font, aText, fg);
-
+	SDL_Surface* surface = TTF_RenderText_Solid(font, aText, fontColor);
 	SDL_Texture* optimizedSurface = SDL_CreateTextureFromSurface(myRenderer, surface);
 	
     SDL_Rect sizeRect;
@@ -95,7 +100,6 @@ void Drawer::DrawText(const char* aText, const char* aFontFile, int aX, int aY)
 	SDL_RenderCopy(myRenderer, optimizedSurface, &sizeRect, &posRect);
 	SDL_DestroyTexture(optimizedSurface);
 	SDL_FreeSurface(surface);
-	TTF_CloseFont(font);
 }
 
 bool Drawer::LoadTexture(const char* anImage, ETextureId aTextureId)
@@ -109,5 +113,19 @@ bool Drawer::LoadTexture(const char* anImage, ETextureId aTextureId)
 	myTextures[aTextureId] = new myTexture(surface->w, surface->h, optimizedSurface);
 	
 	SDL_FreeSurface(surface);
-	return true;
+
+	if (optimizedSurface)
+		return true;
+	else
+		return false;
+}
+
+bool Drawer::LoadFont(const char* aFontFile, const unsigned int &size)
+{
+	font = TTF_OpenFont(aFontFile, 24);
+	/*if (font)
+		return true;
+	else
+		return false;*/
+	return font;
 }

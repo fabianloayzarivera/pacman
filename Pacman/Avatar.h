@@ -10,7 +10,7 @@ public:
 	Avatar(const Vector2f& aPosition);
 	~Avatar(void);
 	//void Draw(Drawer* aDrawer);
-	void Update(float aTime);
+	virtual void Update(float aTime, World* aWorld = nullptr);
 
 private:
 

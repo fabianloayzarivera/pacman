@@ -35,7 +35,7 @@ void Ghost::Die(World* aWorld)
 	aWorld->GetPath(myCurrentTileX, myCurrentTileY, 13, 13, myPath); //optimize this method
 }
 
-void Ghost::Update(float aTime, World* aWorld)
+void Ghost::Update(float aTime, World* aWorld)  //Check way to refactor world on update
 {
 	speed = 30.f;
 	//printf("%d\n", myIsClaimableFlag);

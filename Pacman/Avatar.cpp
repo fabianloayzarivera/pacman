@@ -10,7 +10,7 @@ Avatar::~Avatar(void)
 {
 }
 
-void Avatar::Update(float aTime)
+void Avatar::Update(float aTime, World* aWorld)
 {
 	int tileSize = 22;
 	Vector2f destination(myNextTileX * tileSize, myNextTileY * tileSize);

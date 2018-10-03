@@ -5,6 +5,7 @@
 #include "Vector2f.h"
 #include "Drawer.h"
 
+class World;
 class MovableGameEntity : public GameEntity
 {
 public:
@@ -14,18 +15,16 @@ public:
 	void SetNextTile(int anX, int anY);
 	int GetCurrentTileX() const { return myCurrentTileX; }
 	int GetCurrentTileY() const { return myCurrentTileY; }
-	//virtual void Draw(Drawer* aDrawer); //Maybe just Game Entity?
 	bool IsAtDestination();
+	virtual void Update(float aTime, World* aWorld = nullptr) = 0; //World maybe should not be there
 
 protected:
 
-	int myCurrentTileX;
-	int myCurrentTileY;
-
-	int myNextTileX;
-	int myNextTileY;
-
-	float speed;
+	int		myCurrentTileX;
+	int		myCurrentTileY;
+	int		myNextTileX;
+	int		myNextTileY;
+	float	speed;
 
 };
 

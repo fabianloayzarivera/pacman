@@ -2,6 +2,7 @@
 #define WORLD_H
 
 #include <list>
+#include <memory>
 #include "Vector2f.h"
 
 class Drawer;
@@ -40,11 +41,18 @@ private:
 	bool InitDots();
 	bool InitBigDots();
 
-	std::list<PathmapTile*> myPathmapTiles;
-	std::list<Dot*> myDots;
-	std::list<BigDot*> myBigDots;
-	std::list<Cherry*> myCherry;
+	/*std::list<std::shared_ptr<PathmapTile>> myPathmapTiles;
+	std::list<std::shared_ptr<Dot>>			myDots;
+	std::list<std::shared_ptr<BigDot>>		myBigDots;
+	std::list<std::shared_ptr<Cherry>>		myCherry;*/
 
+	//IF we are not using C++11
+	std::list<PathmapTile*> myPathmapTiles;
+	std::list<Dot*>			myDots;
+	std::list<BigDot*>		myBigDots;
+	std::list<Cherry*>		myCherry;
+	//
+	
 };
 
 #endif // WORLD_H
