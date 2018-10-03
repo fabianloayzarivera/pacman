@@ -106,7 +106,7 @@ void World::Draw(Drawer* aDrawer)
 {
 	//sprintf_s(buf, "%d", myBigDots.size());
 	//aDrawer->DrawText(buf, "freefont-ttf\\sfd\\FreeMono.ttf", 930, 70);
-	aDrawer->Draw("PlayField");
+	aDrawer->Draw(ETextureId::PLAYFIELD);
 	
 	for(std::list<Dot*>::iterator list_iter = myDots.begin(); list_iter != myDots.end(); list_iter++)
 	{
@@ -140,11 +140,10 @@ bool World::HasIntersectedDot(const Vector2f& aPosition)
 {
 	for(std::list<Dot*>::iterator list_iter = myDots.begin(); list_iter != myDots.end(); list_iter++)
 	{
-		Dot* dot = *list_iter;
-		if ((dot->GetPosition() - aPosition).Length() < 5.f)
+		//Dot* dot = *list_iter;
+		if (((*list_iter)->GetPosition() - aPosition).Length() < 5.f)
 		{
-			myDots.remove(dot);
-			delete dot;
+			myDots.remove(*list_iter);
 			return true;
 		}
 	}
@@ -156,11 +155,11 @@ bool World::HasIntersectedBigDot(const Vector2f& aPosition)
 {
 	for(std::list<BigDot*>::iterator list_iter = myBigDots.begin(); list_iter != myBigDots.end(); list_iter++)
 	{
-		BigDot* dot = *list_iter;
-		if ((dot->GetPosition() - aPosition).Length() < 5.f)
+		//BigDot* dot = *list_iter;
+		if (((*list_iter)->GetPosition() - aPosition).Length() < 5.f)
 		{
-			myBigDots.remove(dot);
-			delete dot;
+			myBigDots.remove(*list_iter);
+			//delete dot;
 			return true;
 		}
 	}

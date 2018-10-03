@@ -43,12 +43,19 @@ Pacman::~Pacman(void)
 
 bool Pacman::Init()
 {
+	
+	myDrawer->LoadTexture("Big_Dot_32.png", ETextureId::BIG_DOT);
+	myDrawer->LoadTexture("Small_Dot_32.png", ETextureId::DOT);
+	myDrawer->LoadTexture("ghost_32.png", ETextureId::GHOST_GREY);
+	myDrawer->LoadTexture("Ghost_Dead_32.png", ETextureId::GHOST_DEAD);
+	myDrawer->LoadTexture("Ghost_Vulnerable_32.png", ETextureId::GHOST_CLAIMABLE);	
+	myDrawer->LoadTexture("open_right_32.png", ETextureId::AVATAR_OPEN_RIGHT);
+	myDrawer->LoadTexture("closed_right_32.png", ETextureId::AVATAR_CLOSED_RIGHT);
+	myDrawer->LoadTexture("open_left_32.png", ETextureId::AVATAR_OPEN_LEFT);
+	myDrawer->LoadTexture("open_up_32.png", ETextureId::AVATAR_OPEN_UP);
+	myDrawer->LoadTexture("open_down_32.png", ETextureId::AVATAR_OPEN_DOWN);
+	myDrawer->LoadTexture("playfield.png", ETextureId::PLAYFIELD);
 	myWorld->Init();
-	myDrawer->LoadTexture("Big_Dot_32.png", "BigDot");
-	myDrawer->LoadTexture("Small_Dot_32.png", "SmallDot");
-	myDrawer->LoadTexture("ghost_32.png", "GhostDead");
-	myDrawer->LoadTexture("open_32.png", "OpenRight");
-	myDrawer->LoadTexture("playfield.png", "PlayField");
 
 	return true;
 }
@@ -83,14 +90,14 @@ bool Pacman::Update(float aTime)
 	{
 		myScore += 20;
 		myGhostGhostCounter = 20.f;
-		myGhost->myIsClaimableFlag = true;
+		myGhost->ChangeClaimableState(true);
 	}
 	//----------------------------------------------
-
+	printf("%f\n", myGhostGhostCounter);
 	//Move this to Ghost update ------------------------
 	if (myGhostGhostCounter <= 0)
 	{
-		myGhost->myIsClaimableFlag = false;
+		myGhost->ChangeClaimableState(false);
 	}
 
 	if ((myGhost->GetPosition() - myAvatar->GetPosition()).Length() < 10.f)
@@ -102,10 +109,10 @@ bool Pacman::Update(float aTime)
 			myAvatar->SetPosition(Vector2f(13*22,22*22));
 			myGhost->SetPosition(Vector2f(13*22,13*22));
 		}
-		else if (myGhost->myIsClaimableFlag && !myGhost->myIsDeadFlag)
+		else if (myGhost->GetIsClaimable() && !myGhost->GetIsDead())
 		{
 			myScore += 50;
-			myGhost->myIsDeadFlag = true;
+			//myGhost->myIsDeadFlag = true;
 			myGhost->Die(myWorld);
 		}
 	}

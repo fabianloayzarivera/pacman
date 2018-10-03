@@ -1,7 +1,7 @@
 #include "GameEntity.h"
-#include "SDL_image.h"
+#include "Drawer.h"
 
-GameEntity::GameEntity(const Vector2f& aPosition, const char* anImage, const char* aTextureId)
+GameEntity::GameEntity(const Vector2f& aPosition, const char* anImage, ETextureId aTextureId)
 :myPosition(aPosition)
 ,myImage(anImage)
 ,myIdMarkedForDeleteFlag(false)
@@ -20,7 +20,7 @@ bool GameEntity::Intersect(GameEntity* aGameEntity)
 	return false;	
 }
 
-//void GameEntity::Draw(Drawer* aDrawer)
-//{
-//	//aDrawer->Draw(aSurface,(int)myPosition.myX + 220, (int)myPosition.myY + 60); //moved to static game entity
-//}
+void GameEntity::Draw(Drawer* aDrawer)
+{
+	aDrawer->Draw(myTextureId,(int)myPosition.myX + 220, (int)myPosition.myY + 60); 
+}

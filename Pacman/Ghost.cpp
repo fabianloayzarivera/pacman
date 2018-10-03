@@ -4,7 +4,7 @@
 #include "Drawer.h"
 
 Ghost::Ghost(const Vector2f& aPosition)
-: MovableGameEntity(aPosition, "ghost_32.png", "GhostDead")
+: MovableGameEntity(aPosition, "ghost_32.png", ETextureId::GHOST_GREY, 30.f)
 {
 	myIsClaimableFlag = false;
 	myIsDeadFlag = false;
@@ -17,20 +17,37 @@ Ghost::~Ghost(void)
 {
 }
 
+void Ghost::ChangeClaimableState(bool aIsClaimable) 
+{
+	myIsClaimableFlag = aIsClaimable;
+	if (aIsClaimable)
+	{
+		if (myTextureId != ETextureId::GHOST_CLAIMABLE) myTextureId = ETextureId::GHOST_CLAIMABLE;
+	}
+	else if (myTextureId != ETextureId::GHOST_GREY) myTextureId = ETextureId::GHOST_GREY;
+	
+}
+
 void Ghost::Die(World* aWorld)
 {
+	myIsDeadFlag = true;
 	myPath.clear();
-	aWorld->GetPath(myCurrentTileX, myCurrentTileY, 13, 13, myPath);
+	aWorld->GetPath(myCurrentTileX, myCurrentTileY, 13, 13, myPath); //optimize this method
 }
 
 void Ghost::Update(float aTime, World* aWorld)
 {
-	float speed = 30.f;
+	speed = 30.f;
+	//printf("%d\n", myIsClaimableFlag);
 	int nextTileX = GetCurrentTileX() + myDesiredMovementX;
 	int nextTileY = GetCurrentTileY() + myDesiredMovementY;
 
 	if (myIsDeadFlag)
+	{
 		speed = 120.f;
+		if (myTextureId != ETextureId::GHOST_DEAD) myTextureId = ETextureId::GHOST_DEAD;
+	}
+		
 
 	if (IsAtDestination())
 	{
@@ -65,6 +82,7 @@ void Ghost::Update(float aTime, World* aWorld)
 			}
 
 			myIsDeadFlag = false;
+			//if (myTextureId != ETextureId::GHOST_GREY) myTextureId = ETextureId::GHOST_GREY;
 		}
 	}
 

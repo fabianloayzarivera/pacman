@@ -7,9 +7,9 @@
 class StaticGameEntity : public GameEntity
 {
 public:
-	StaticGameEntity(Vector2f aPosition, const char* anImage, const char* aTextureId);
+	StaticGameEntity(Vector2f aPosition, const char* anImage, ETextureId aTextureId);
 	~StaticGameEntity(void);
-	virtual void Draw(Drawer* aDrawer);
+	//virtual void Draw(Drawer* aDrawer); //Maybe Just Game Entity?
 };
 
 #endif // STATICGAMEENTITY_H

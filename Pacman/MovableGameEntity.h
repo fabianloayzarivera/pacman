@@ -8,13 +8,13 @@
 class MovableGameEntity : public GameEntity
 {
 public:
-	MovableGameEntity(const Vector2f& aPosition, const char* anImage, const char* aTextureId);
+	MovableGameEntity(const Vector2f& aPosition, const char* anImage, ETextureId aTextureId, float aSpeed = 0.f);
 	~MovableGameEntity(void);
 
 	void SetNextTile(int anX, int anY);
 	int GetCurrentTileX() const { return myCurrentTileX; }
 	int GetCurrentTileY() const { return myCurrentTileY; }
-	virtual void Draw(Drawer* aDrawer);
+	//virtual void Draw(Drawer* aDrawer); //Maybe just Game Entity?
 	bool IsAtDestination();
 
 protected:
@@ -24,6 +24,8 @@ protected:
 
 	int myNextTileX;
 	int myNextTileY;
+
+	float speed;
 
 };
 

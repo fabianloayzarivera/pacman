@@ -37,7 +37,7 @@ bool Drawer::Init()
 }
 
 //void Drawer::Draw(const char* anImage, int aCellX, int aCellY) //change const char* to SDL_Texture pointer to draw
-void Drawer::Draw(const char *aTextureId, const int &aCellX, const int &aCellY) const
+void Drawer::Draw(ETextureId aTextureId, const int &aCellX, const int &aCellY) const
 {
 	//SDL_Surface* surface = IMG_Load( anImage ) ; //Load surface only once for each object and store them in each object.
 
@@ -98,7 +98,7 @@ void Drawer::DrawText(const char* aText, const char* aFontFile, int aX, int aY)
 	TTF_CloseFont(font);
 }
 
-bool Drawer::LoadTexture(const char* anImage, const char* aTextureId)
+bool Drawer::LoadTexture(const char* anImage, ETextureId aTextureId)
 {
 	SDL_Surface* surface = IMG_Load( anImage ) ; //Load surface only once for each object and store them in each object.
 
