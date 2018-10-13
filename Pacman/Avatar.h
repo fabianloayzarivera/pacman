@@ -10,10 +10,11 @@ public:
 	Avatar(const Vector2f& aPosition);
 	~Avatar(void);
 	//void Draw(Drawer* aDrawer);
-	virtual void Update(float aTime, World* aWorld = nullptr);
-
+	virtual void Update(float aTime);
+	void	Die();
+	void	FlipFlopTexture();
 private:
-
+	
 
 };
 

@@ -5,7 +5,7 @@
 #include <sstream>
 #include <fstream>
 #include <string>
-
+#include "MovableGameEntity.h"
 #include "Avatar.h"
 #include "World.h"
 #include "Ghost.h"
@@ -30,15 +30,38 @@ Pacman::Pacman(Drawer* aDrawer)
 , myScore(0)
 , myFps(0)
 , myLives(3)
-, myGhostGhostCounter(0.f)
+//, myGhostGhostCounter(0.f)
 {
-	myAvatar = new Avatar(Vector2f(13*22,22*22));
-	myGhost = new Ghost(Vector2f(13*22,13*22));
 	myWorld = new World();
+	Avatar* aAvatar = new Avatar(Vector2f(13*22,22*22));
+	
+	Ghost*  aRedGhost = new Ghost(Vector2f(13 * 22, 10 * 22), aAvatar, LEFT, CHASE);
+	aRedGhost->SetWorld(myWorld);
+	myEntities.push_back(aRedGhost);
+
+	Ghost*  aBlueGhost = new Ghost(Vector2f(15 * 22, 13 * 22), aAvatar, UP, CAGE);
+	aBlueGhost->SetWorld(myWorld);
+	myEntities.push_back(aBlueGhost);
+
+	Ghost*  aOrangeGhost = new Ghost(Vector2f(13 * 22, 13 * 22), aAvatar, UP, CAGE);
+	aOrangeGhost->SetWorld(myWorld);
+	myEntities.push_back(aOrangeGhost);
+
+	Ghost*  aPinkGhost = new Ghost(Vector2f(11 * 22, 13 * 22), aAvatar, DOWN, CAGE);
+	aPinkGhost->SetWorld(myWorld);
+	myEntities.push_back(aPinkGhost);
+
+
+	aAvatar->SetWorld(myWorld);	
+	myAvatar = aAvatar;	
+	myEntities.push_back(aAvatar);
+	
+	
 }
 
 Pacman::~Pacman(void)
 {
+	//Destroy list entities, avatar, drawer, world, etc
 }
 
 bool Pacman::Init()
@@ -79,46 +102,55 @@ bool Pacman::Update(float aTime)
 		return true;
 	}
 
-	MoveAvatar();
-	myAvatar->Update(aTime);
-	myGhost->Update(aTime, myWorld);
+	//MoveAvatar();
+	myAvatar->SetMyNextMovement(myNextMovement);
+	//myAvatar->Update(aTime);
+	//myGhost->Update(aTime, myWorld);
+
+	for (std::list<MovableGameEntity*>::iterator list_iter = myEntities.begin(); list_iter != myEntities.end(); list_iter++)
+	{
+		(*list_iter)->Update(aTime);
+	}
 
 	//Move this to update avatar ---------------------
 	if (myWorld->HasIntersectedDot(myAvatar->GetPosition()))
 		myScore += 10;
 
-	myGhostGhostCounter -= aTime;
+	//myGhostGhostCounter -= aTime;
 
 	if (myWorld->HasIntersectedBigDot(myAvatar->GetPosition()))
 	{
 		myScore += 20;
-		myGhostGhostCounter = 20.f;
-		myGhost->ChangeClaimableState(true);
+		//myGhostGhostCounter = 20.f;
+		//myGhost->ChangeClaimableState(true);
+		ChangeGhostsClaimable(true);
 	}
 	//----------------------------------------------
 	//printf("%f\n", myGhostGhostCounter);
 	//Move this to Ghost update ------------------------
-	if (myGhostGhostCounter <= 0)
-	{
-		myGhost->ChangeClaimableState(false);
-	}
+	//if (myGhostGhostCounter <= 0)
+	//{
+	//	//myGhost->ChangeClaimableState(false);
+	//}
 
-	if ((myGhost->GetPosition() - myAvatar->GetPosition()).Length() < 10.f)
-	{
-		if (myGhostGhostCounter <= 0.f)
-		{
-			myLives--;
+	CheckGhostsCollision();
 
-			myAvatar->SetPosition(Vector2f(13*22,22*22));
-			myGhost->SetPosition(Vector2f(13*22,13*22));
-		}
-		else if (myGhost->GetIsClaimable() && !myGhost->GetIsDead())
-		{
-			myScore += 50;
-			//myGhost->myIsDeadFlag = true;
-			myGhost->Die(myWorld);
-		}
-	}
+	//if ((myGhost->GetPosition() - myAvatar->GetPosition()).Length() < 10.f)
+	//{
+	//	if (myGhostGhostCounter <= 0.f)
+	//	{
+	//		myLives--;
+
+	//		myAvatar->SetPosition(Vector2f(13*22,22*22));
+	//		myGhost->SetPosition(Vector2f(13*22,13*22));
+	//	}
+	//	else if (myGhost->GetIsClaimable() && !myGhost->GetIsDead())
+	//	{
+	//		myScore += 50;
+	//		//myGhost->myIsDeadFlag = true;
+	//		myGhost->Die(myWorld);
+	//	}
+	//}
 	//--------------------------------
 	
 	if (aTime > 0)
@@ -146,30 +178,34 @@ bool Pacman::UpdateInput()
 	return true;
 }
 
-void Pacman::MoveAvatar()
-{
-	int nextTileX = myAvatar->GetCurrentTileX() + (int)myNextMovement.myX;
-	int nextTileY = myAvatar->GetCurrentTileY() + (int)myNextMovement.myY;
-
-	if (myAvatar->IsAtDestination())
-	{
-		if (myWorld->TileIsValid(nextTileX, nextTileY))
-		{
-			myAvatar->SetNextTile(nextTileX, nextTileY);
-		}
-	}
-}
+//void Pacman::MoveAvatar()
+//{
+//	/*int nextTileX = myAvatar->GetCurrentTileX() + (int)myNextMovement.myX;
+//	int nextTileY = myAvatar->GetCurrentTileY() + (int)myNextMovement.myY;
+//
+//	if (myAvatar->IsAtDestination())
+//	{
+//		if (myWorld->TileIsValid(nextTileX, nextTileY))
+//		{
+//			myAvatar->SetNextTile(nextTileX, nextTileY);
+//		}
+//	}*/
+//}
 
 bool Pacman::CheckEndGameCondition()
 {
-	return false;
+	return myWorld->CheckEndGame();
 }
 
 bool Pacman::Draw()
 {
 	myWorld->Draw(myDrawer);
-	myAvatar->Draw(myDrawer);
-	myGhost->Draw(myDrawer);
+	//myAvatar->Draw(myDrawer);
+	//myGhost->Draw(myDrawer);
+	for (std::list<MovableGameEntity*>::iterator list_iter = myEntities.begin(); list_iter != myEntities.end(); list_iter++)
+	{
+		(*list_iter)->Draw(myDrawer);
+	}
 
 	std::string scoreString;
 	std::stringstream scoreStream;
@@ -197,6 +233,61 @@ bool Pacman::Draw()
 	fpsString = fpsStream.str();
 	myDrawer->DrawText(fpsString.c_str(), 930, 50);
 
-	printf("%s\n", fpsString.c_str());
+	//printf("%s\n", fpsString.c_str());
 	return true;
+}
+
+void Pacman::ChangeGhostsClaimable(const bool &aState) 
+{
+	for (std::list<MovableGameEntity*>::iterator list_iter = myEntities.begin(); list_iter != myEntities.end(); list_iter++)
+	{
+		Ghost* aGhost = dynamic_cast<Ghost*>(*list_iter);
+		if (aGhost)
+			aGhost->ChangeClaimableState(aState);
+	}
+}
+
+void Pacman::CheckGhostsCollision() 
+{
+	for (std::list<MovableGameEntity*>::iterator list_iter = myEntities.begin(); list_iter != myEntities.end(); list_iter++)
+	{
+		Ghost* aGhost = dynamic_cast<Ghost*>(*list_iter);
+		if (aGhost)
+		{
+			if ((aGhost->GetPosition() - myAvatar->GetPosition()).Length() < 10.f)
+			{
+				if (aGhost->GetGhostCounter() <= 0.f)
+				{
+					myLives--;
+					//Reset positions
+					//myAvatar->SetPosition(Vector2f(13 * 22, 22 * 22));
+					//myAvatar->ResetTiles();
+					myNextMovement = Vector2f(-1.f, 0.f);
+					myAvatar->Die();
+					//aGhost->SetPosition(Vector2f(13 * 22, 13 * 22));
+					ResetGhosts();
+					return;
+					
+				}
+				else if (aGhost->GetIsClaimable() && !aGhost->GetIsDead())
+				{
+					myScore += 50;
+					//myGhost->myIsDeadFlag = true;
+					aGhost->Die();
+				}
+			}
+		}
+	}
+}
+
+void Pacman::ResetGhosts() 
+{
+	for (std::list<MovableGameEntity*>::iterator list_iter = myEntities.begin(); list_iter != myEntities.end(); list_iter++)
+	{
+		Ghost* aGhost = dynamic_cast<Ghost*>(*list_iter);
+		if (aGhost)
+		{
+			aGhost->Reset();
+		}
+	}
 }

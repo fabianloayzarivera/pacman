@@ -2,12 +2,14 @@
 #define PACMAN_H
 
 #include "Vector2f.h"
+#include <list>
 
 struct SDL_Surface;
 class Drawer;
 class Avatar;
 class World;
-class Ghost;
+//class Ghost;
+class MovableGameEntity;
 
 class Pacman
 {
@@ -17,18 +19,18 @@ public:
 
 	bool Update(float aTime);
 	bool Draw();
-
+	void ChangeGhostsClaimable(const bool& aState);
+	void CheckGhostsCollision();
+	void ResetGhosts();
 private:
 	Pacman(Drawer* aDrawer);
 	bool Init();
 	bool UpdateInput();
-	void MoveAvatar();
+	//void MoveAvatar();  
 	bool CheckEndGameCondition();
 
-	Drawer* myDrawer;
-
 	float myTimeToNextUpdate;
-	float myGhostGhostCounter;
+	//float myGhostGhostCounter;
 
 	int myLives;
 	int myScore;
@@ -36,8 +38,10 @@ private:
 
 	Vector2f myNextMovement;
 
-	Avatar* myAvatar;
-	Ghost* myGhost;
+	std::list<MovableGameEntity *> myEntities;
+	Avatar* myAvatar;  //Leaving a pointer of our controlled player
+	//Ghost* myGhost;
+	Drawer* myDrawer;
 	World* myWorld;
 
 };

@@ -26,8 +26,8 @@ public:
 	bool HasIntersectedBigDot(const Vector2f& aPosition);
 	bool HasIntersectedCherry(const Vector2f& aPosition);
 
-	void Update();
-
+	//void Update();
+	bool CheckEndGame();
 	void GetPath(int aFromX, int aFromY, int aToX, int aToY, std::list<PathmapTile*>& aList);
 
 private:
@@ -46,7 +46,6 @@ private:
 	std::list<std::shared_ptr<BigDot>>		myBigDots;
 	std::list<std::shared_ptr<Cherry>>		myCherry;*/
 
-	//IF we are not using C++11
 	std::list<PathmapTile*> myPathmapTiles;
 	std::list<Dot*>			myDots;
 	std::list<BigDot*>		myBigDots;

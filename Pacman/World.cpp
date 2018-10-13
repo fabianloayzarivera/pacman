@@ -36,7 +36,7 @@ bool World::InitPathmap()
 			std::getline (myfile,line);
 			for (unsigned int i = 0; i < line.length(); i++)
 			{
-				PathmapTile* tile = new PathmapTile(i, lineIndex, (line[i] == 'x'));
+				PathmapTile* tile = new PathmapTile(i, lineIndex, (line[i] == 'x'), (line[i] == 'g'));
 				myPathmapTiles.push_back(tile);
 			}
 
@@ -62,7 +62,7 @@ bool World::InitDots()
 			{
 				if (line[i] == '.')
 				{
-					Dot* dot = new Dot(Vector2f(i*22, lineIndex*22));
+					Dot* dot = new Dot(Vector2f((float)(i * 22), (float)(lineIndex * 22)));
 					myDots.push_back(dot);
 				}
 			}
@@ -89,7 +89,7 @@ bool World::InitBigDots()
 			{
 				if (line[i] == 'o')
 				{
-					BigDot* dot = new BigDot(Vector2f(i*22, lineIndex*22));
+					BigDot* dot = new BigDot(Vector2f((float)(i*22), (float)(lineIndex*22)));
 					myBigDots.push_back(dot);
 				}
 			}
@@ -129,7 +129,7 @@ bool World::TileIsValid(int anX, int anY)
 	{
 		PathmapTile* tile = *list_iter;
 
-		if (anX == tile->myX && anY == tile->myY && !tile->myIsBlockingFlag)
+		if (anX == tile->myX && anY == tile->myY && !tile->myIsBlockingFlag && !tile->myIsGateFlag)
 			return true;
 	}
 
@@ -265,4 +265,13 @@ bool World::Pathfind(PathmapTile* aFromTile, PathmapTile* aToTile, std::list<Pat
 	}
 
 	return false;
+}
+
+bool World::CheckEndGame() 
+{
+	if (myDots.size() == 0 && myBigDots.size() == 0)
+		return true;
+	else
+		return false;
+	
 }

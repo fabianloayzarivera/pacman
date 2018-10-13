@@ -12,11 +12,14 @@ public:
 	MovableGameEntity(const Vector2f& aPosition, const char* anImage, ETextureId aTextureId, float aSpeed = 0.f);
 	~MovableGameEntity(void);
 
-	void SetNextTile(int anX, int anY);
+	void SetNextTile(const int &anX, const int &anY);
+	void SetWorld(World* &aWorld) { myWorld = aWorld; }
 	int GetCurrentTileX() const { return myCurrentTileX; }
 	int GetCurrentTileY() const { return myCurrentTileY; }
 	bool IsAtDestination();
-	virtual void Update(float aTime, World* aWorld = nullptr) = 0; //World maybe should not be there
+	void ResetTiles();
+	void	SetMyNextMovement(const Vector2f &aNextMovement) { myNextMovement = aNextMovement; }
+	virtual void Update(float aTime) = 0; //World maybe should not be there
 
 protected:
 
@@ -24,7 +27,9 @@ protected:
 	int		myCurrentTileY;
 	int		myNextTileX;
 	int		myNextTileY;
-	float	speed;
+	float	mySpeed;
+	Vector2f myNextMovement;
+	World*	myWorld;
 
 };
 

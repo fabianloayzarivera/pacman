@@ -4,12 +4,13 @@
 class PathmapTile
 {
 public:
-	PathmapTile(int anX, int anY, bool aIsBlockingFlag);
+	PathmapTile(int anX, int anY, bool aIsBlockingFlag, bool aIsGateFlag);
 	~PathmapTile(void);
 
-	int myX;
-	int myY;
-	bool myIsBlockingFlag;
+	const int myX;
+	const int myY;
+	const bool myIsBlockingFlag;
+	const bool myIsGateFlag;
 	bool myIsVisitedFlag;
 
 };
