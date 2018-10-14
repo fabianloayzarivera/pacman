@@ -32,8 +32,6 @@ Pacman::Pacman(Drawer* aDrawer)
 , myLives(3)
 , myGameOver(false)
 , myGameWon(false)
-//, myCherryCounter(0)
-//, myGhostGhostCounter(0.f)
 {
 	myWorld = new World();
 	Avatar* aAvatar = new Avatar(Vector2f(13*22,22*22));
@@ -110,83 +108,21 @@ bool Pacman::Update(const float aTime)
 
 	if (CheckEndGameCondition())
 	{
-		//myDrawer->DrawText("You win!", "freefont-ttf\\sfd\\FreeMono.ttf", 20, 70);
 		myGameWon = true;
 		return true;
 	}
 	else if (myLives <= 0)
 	{
-		//myDrawer->DrawText("You lose!", "freefont-ttf\\sfd\\FreeMono.ttf", 20, 70);	
 		myGameOver = true;
-		//myDrawer->DrawText("You lose!", 20, 70);
 		return true;
 	}
-
-	//MoveAvatar();
-	//myAvatar->SetMyNextMovement(myNextMovement);  //Get last input 
-	//myAvatar->Update(aTime);
-	//myGhost->Update(aTime, myWorld);
 
 	for (std::list<MovableGameEntity*>::iterator list_iter = myEntities.begin(); list_iter != myEntities.end(); list_iter++)
 	{
 		(*list_iter)->Update(aTime);
 	}
 
-	//Move this to update avatar ---------------------
-	/*if (myWorld->HasIntersectedDot(myAvatar->GetPosition()))
-	{
-		myCherryCounter++;
-		myScore += 10;
-		if (myCherryCounter >= 70)
-		{
-			myWorld->SpawnCherry();
-			myCherryCounter = 0;
-		}
-			
-	}*/
-	
-	/*if (myWorld->HasIntersectedCherry(myAvatar->GetPosition())) 
-	{
-		myScore += 200;
-	}*/
-
-	//myGhostGhostCounter -= aTime;
-
-	//if (myWorld->HasIntersectedBigDot(myAvatar->GetPosition()))
-	//{
-	//	myScore += 20;
-	//	//myGhostGhostCounter = 20.f;
-	//	//myGhost->ChangeClaimableState(true);
-	//	ChangeGhostsClaimable(true);
-	//}
-
-	//----------------------------------------------
-	//printf("%f\n", myGhostGhostCounter);
-	//Move this to Ghost update ------------------------
-	//if (myGhostGhostCounter <= 0)
-	//{
-	//	//myGhost->ChangeClaimableState(false);
-	//}
-
 	CheckGhostsCollision();
-
-	//if ((myGhost->GetPosition() - myAvatar->GetPosition()).Length() < 10.f)
-	//{
-	//	if (myGhostGhostCounter <= 0.f)
-	//	{
-	//		myLives--;
-
-	//		myAvatar->SetPosition(Vector2f(13*22,22*22));
-	//		myGhost->SetPosition(Vector2f(13*22,13*22));
-	//	}
-	//	else if (myGhost->GetIsClaimable() && !myGhost->GetIsDead())
-	//	{
-	//		myScore += 50;
-	//		//myGhost->myIsDeadFlag = true;
-	//		myGhost->Die(myWorld);
-	//	}
-	//}
-	//--------------------------------
 	
 	if (aTime > 0)
 		myFps = (int) (1 / aTime);
@@ -213,20 +149,6 @@ bool Pacman::UpdateInput()
 	return true;
 }
 
-//void Pacman::MoveAvatar()
-//{
-//	/*int nextTileX = myAvatar->GetCurrentTileX() + (int)myNextMovement.myX;
-//	int nextTileY = myAvatar->GetCurrentTileY() + (int)myNextMovement.myY;
-//
-//	if (myAvatar->IsAtDestination())
-//	{
-//		if (myWorld->TileIsValid(nextTileX, nextTileY))
-//		{
-//			myAvatar->SetNextTile(nextTileX, nextTileY);
-//		}
-//	}*/
-//}
-
 const bool Pacman::CheckEndGameCondition()
 {
 	return myWorld->CheckEndGame();
@@ -235,8 +157,6 @@ const bool Pacman::CheckEndGameCondition()
 bool Pacman::Draw()
 {
 	myWorld->Draw(myDrawer);
-	//myAvatar->Draw(myDrawer);
-	//myGhost->Draw(myDrawer);
 	for (std::list<MovableGameEntity*>::iterator list_iter = myEntities.begin(); list_iter != myEntities.end(); list_iter++)
 	{
 		(*list_iter)->Draw(myDrawer);
@@ -248,8 +168,6 @@ bool Pacman::Draw()
 	scoreString = scoreStream.str();
 	myDrawer->DrawText("Score", 20, 50);
 	myDrawer->DrawText(scoreString.c_str(), 90, 50);
-	/*myDrawer->DrawText("Score", "freefont-ttf\\sfd\\FreeMono.ttf", 20, 50);
-	myDrawer->DrawText(scoreString.c_str(), "freefont-ttf\\sfd\\FreeMono.ttf", 90, 50);*/
 
 	std::string livesString;
 	std::stringstream liveStream;
@@ -257,11 +175,8 @@ bool Pacman::Draw()
 	livesString = liveStream.str();
 	myDrawer->DrawText("Lives", 20, 80);
 	myDrawer->DrawText(livesString.c_str(), 90, 80);
-	/*myDrawer->DrawText("Lives", "freefont-ttf\\sfd\\FreeMono.ttf", 20, 80);
-	myDrawer->DrawText(livesString.c_str(), "freefont-ttf\\sfd\\FreeMono.ttf", 90, 80);*/
 
 	myDrawer->DrawText("FPS", 880, 50);
-	//myDrawer->DrawText("FPS", "freefont-ttf\\sfd\\FreeMono.ttf", 880, 50);
 	std::string fpsString;
 	std::stringstream fpsStream;
 	fpsStream << myFps;
@@ -273,7 +188,6 @@ bool Pacman::Draw()
 	if(myGameOver)
 		myDrawer->DrawText("You lose!", 20, 100);
 
-	//printf("%s\n", fpsString.c_str());
 	return true;
 }
 
@@ -299,20 +213,15 @@ void Pacman::CheckGhostsCollision()
 				if (aGhost->GetGhostCounter() <= 0.f)
 				{
 					myLives--;
-					//Reset positions
-					//myAvatar->SetPosition(Vector2f(13 * 22, 22 * 22));
-					//myAvatar->ResetTiles();
 					myNextMovement = Vector2f(-1.f, 0.f);
 					ResetGhosts();
 					myAvatar->Die();
-					//aGhost->SetPosition(Vector2f(13 * 22, 13 * 22));
 					return;
 					
 				}
 				else if (aGhost->GetIsClaimable() && !aGhost->GetIsDead())
 				{
 					myScore += 50;
-					//myGhost->myIsDeadFlag = true;
 					aGhost->Die();
 				}
 			}

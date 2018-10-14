@@ -121,21 +121,16 @@ bool World::InitBigDots()
 
 void World::Draw(Drawer* aDrawer)
 {
-	//sprintf_s(buf, "%d", myBigDots.size());
-	//aDrawer->DrawText(buf, "freefont-ttf\\sfd\\FreeMono.ttf", 930, 70);
+
 	aDrawer->Draw(ETextureId::PLAYFIELD);
 	
 	for(std::list<Dot*>::iterator list_iter = myDots.begin(); list_iter != myDots.end(); list_iter++)
 	{
-		//Dot* dot = *list_iter; //ME
-		//dot->Draw(aDrawer); //ME
 		(*list_iter)->Draw(aDrawer);
 	}
 
 	for(std::list<BigDot*>::iterator list_iter = myBigDots.begin(); list_iter != myBigDots.end(); list_iter++)
 	{
-		//BigDot* dot = *list_iter; //ME
-		//dot->Draw(aDrawer); //ME
 		(*list_iter)->Draw(aDrawer);
 	}
 
@@ -261,51 +256,6 @@ bool SortFromDistance(PathmapTile* a, PathmapTile* b)
 
 	return la < lb;
 }
-
-//bool World::Pathfind(PathmapTile* aFromTile, PathmapTile* aToTile, std::list<PathmapTile*>& aList)
-//{
-//	aFromTile->myIsVisitedFlag = true;
-//
-//	if (aFromTile->myIsBlockingFlag)
-//		return false;
-//
-//	if (aFromTile == aToTile)
-//		return true;
-//
-//	std::list<PathmapTile*> neighborList;
-//
-//	PathmapTile* up = GetTile(aFromTile->myX, aFromTile->myY - 1);
-//	if (up && !up->myIsVisitedFlag && !up->myIsBlockingFlag && ListDoesNotContain(up, aList))
-//		neighborList.push_front(up);
-//
-//	PathmapTile* down = GetTile(aFromTile->myX, aFromTile->myY + 1);
-//	if (down && !down->myIsVisitedFlag && !down->myIsBlockingFlag && ListDoesNotContain(down, aList))
-//		neighborList.push_front(down);
-//
-//	PathmapTile* right = GetTile(aFromTile->myX + 1, aFromTile->myY);
-//	if (right && !right->myIsVisitedFlag && !right->myIsBlockingFlag && ListDoesNotContain(right, aList))
-//		neighborList.push_front(right);
-//
-//	PathmapTile* left = GetTile(aFromTile->myX - 1, aFromTile->myY);
-//	if (left && !left->myIsVisitedFlag && !left->myIsBlockingFlag && ListDoesNotContain(left, aList))
-//		neighborList.push_front(left);
-//
-//	neighborList.sort(SortFromGhostSpawn);
-//
-//	for(std::list<PathmapTile*>::iterator list_iter = neighborList.begin(); list_iter != neighborList.end(); list_iter++)
-//	{
-//		PathmapTile* tile = *list_iter;
-//
-//		aList.push_back(tile);
-//
-//		if (Pathfind(tile, aToTile, aList))
-//			return true;
-//
-//		aList.pop_back();
-//	}
-//
-//	return false;
-//}
 
 bool World::Pathfind(PathmapTile* aFromTile, PathmapTile* aToTile, std::list<PathmapTile*>& aList)
 {

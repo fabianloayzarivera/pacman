@@ -51,11 +51,11 @@ void Ghost::Die()
 {
 	myIsDeadFlag = true;
 	myPath.clear();
-	myGameInstance->GetWorld()->GetPath(myCurrentTileX, myCurrentTileY, 13, 13, myPath); //optimize this method
+	myGameInstance->GetWorld()->GetPath(myCurrentTileX, myCurrentTileY, 13, 13, myPath); 
 	myMoveType = DEAD;
 }
 
-void Ghost::Update(float aTime)  //Check way to refactor world on update
+void Ghost::Update(float aTime) 
 {
 	myGhostGhostCounter -= aTime;
 
@@ -68,10 +68,7 @@ void Ghost::Update(float aTime)  //Check way to refactor world on update
 	int tileSize = 22;
 	int nextTileX;
 	int nextTileY;
-	//printf("%d\n", myIsClaimableFlag);
-	
-	//int nextTileX = GetCurrentTileX() + myDesiredMovementX;
-	//int nextTileY = GetCurrentTileY() + myDesiredMovementY;
+
 
 	if (myIsDeadFlag)
 	{
@@ -130,19 +127,6 @@ void Ghost::Update(float aTime)  //Check way to refactor world on update
 			break;
 		case CHASE:
 			SearchDirectionToAvatar();
-			/*switch (myDirection)
-			{
-			case UP: printf("UP!\n");
-				break;
-			case LEFT: printf("LEFT!\n");
-				break;
-			case DOWN: printf("DOWN!\n");
-				break;
-			case RIGHT: printf("RIGHT!\n");
-				break;
-			default:
-				break;
-			}*/
 			UpdateDirection();
 			nextTileX = GetCurrentTileX() + myDesiredMovementX;
 			nextTileY = GetCurrentTileY() + myDesiredMovementY;
@@ -158,70 +142,6 @@ void Ghost::Update(float aTime)  //Check way to refactor world on update
 			break;
 		}
 	}
-
-	/*if (IsAtDestination())
-	{*/
-		//SetNextTile(nextTileX, nextTileY);
-		//printf("Check!\n");
-		/*if (!myPath.empty())
-		{
-			PathmapTile* nextTile = myPath.front();
-			myPath.pop_front();
-			SetNextTile(nextTile->myX, nextTile->myY);
-		}*/
-		/*else if (myWorld->TileIsValid(nextTileX, nextTileY))
-		{
-			SetNextTile(nextTileX, nextTileY);
-		}*/
-		//else
-		//{
-			/*if (myDesiredMovementX == 1)
-			{
-				myDesiredMovementX = 0;
-				myDesiredMovementY = 1;
-			} else if (myDesiredMovementY == 1)
-			{
-				myDesiredMovementX = -1;
-				myDesiredMovementY = 0;			
-			} else if (myDesiredMovementX == -1)
-			{
-				myDesiredMovementX = 0;
-				myDesiredMovementY = -1;
-			} else
-			{
-				myDesiredMovementX = 1;
-				myDesiredMovementY = 0;
-			}*/
-			
-
-			/*SearchDirectionToAvatar();
-			switch (myDirection)
-			{
-			case UP: printf("UP!\n");
-				break;
-			case LEFT: printf("LEFT!\n");
-				break;
-			case DOWN: printf("DOWN!\n");
-				break;
-			case RIGHT: printf("RIGHT!\n");
-				break;
-			default:
-				break;
-			}
-			UpdateDirection();
-			int nextTileX = GetCurrentTileX() + myDesiredMovementX;
-			int nextTileY = GetCurrentTileY() + myDesiredMovementY;
-
-			if (myWorld->TileIsValid(nextTileX, nextTileY))
-				SetNextTile(nextTileX, nextTileY);
-
-			myIsDeadFlag = false;*/
-
-
-			//if (myTextureId != ETextureId::GHOST_GREY) myTextureId = ETextureId::GHOST_GREY;
-		//}
-		
-	//}
 
 	Vector2f destination((float)(myNextTileX * tileSize), (float)(myNextTileY * tileSize));
 	Vector2f dir = destination - myPosition;
@@ -241,10 +161,6 @@ void Ghost::Update(float aTime)  //Check way to refactor world on update
 	}
 }
 
-//void Ghost::SetImage(const char* anImage)
-//{
-//	myImage = anImage;
-//}
 
 void Ghost::Reset() 
 {
@@ -412,17 +328,3 @@ bool Ghost::CheckIsPortal(const int &nextTileX, const int &nextTileY)
 	}
 	return false;
 }
-
-//void Ghost::Draw(Drawer* aDrawer)
-//{
-//	/*if (myIsDeadFlag)
-//		aDrawer->Draw("Ghost_Dead_32.png", (int)myPosition.myX + 220, (int)myPosition.myY + 60);
-//	else if (myIsClaimableFlag)
-//		aDrawer->Draw("Ghost_Vulnerable_32.png", (int)myPosition.myX + 220, (int)myPosition.myY + 60);
-//	else
-//		aDrawer->Draw(myImage, (int)myPosition.myX + 220, (int)myPosition.myY + 60);*/
-//	
-//	//Placeholder
-//	aDrawer->Draw(myTextureId, (int)myPosition.myX + 220, (int)myPosition.myY + 60);
-//	//----
-//}
