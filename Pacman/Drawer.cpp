@@ -25,7 +25,7 @@ Drawer::Drawer(SDL_Window* aWindow, SDL_Renderer* aRenderer)
 
 Drawer::~Drawer(void)
 {
-	//DELETE ALL TEXTURES FROM MAP!!
+	//***Delete all textures from map***//
 	for (map<ETextureId, myTexture*>::iterator itr = myTextures.begin(); itr != myTextures.end(); itr++)
 	{
 		delete (itr->second);
@@ -123,9 +123,5 @@ bool Drawer::LoadTexture(const char* anImage, ETextureId aTextureId)
 bool Drawer::LoadFont(const char* aFontFile, const unsigned int &size)
 {
 	font = TTF_OpenFont(aFontFile, 24);
-	/*if (font)
-		return true;
-	else
-		return false;*/
-	return font;
+	return font ? true : false;
 }

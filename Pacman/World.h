@@ -29,28 +29,28 @@ public:
 	//void Update();
 	bool CheckEndGame();
 	void GetPath(int aFromX, int aFromY, int aToX, int aToY, std::list<PathmapTile*>& aList);
-
+	bool SpawnCherry();
 private:
 
 	PathmapTile* GetTile(int aFromX, int aFromY);
 	bool Pathfind(PathmapTile* aFromTile, PathmapTile* aToTile, std::list<PathmapTile*>& aList);
+	
 	bool ListDoesNotContain(PathmapTile* aFromTile, std::list<PathmapTile*>& aList);
-
 
 	bool InitPathmap();
 	bool InitDots();
 	bool InitBigDots();
 
+	std::list<PathmapTile*> myPathmapTiles;
+	std::list<Dot*>			myDots;
+	std::list<BigDot*>		myBigDots;
+	Cherry*					myCherry;
+	
+	//**** We could also use (if supported) Smart Pointers *** //
 	/*std::list<std::shared_ptr<PathmapTile>> myPathmapTiles;
 	std::list<std::shared_ptr<Dot>>			myDots;
 	std::list<std::shared_ptr<BigDot>>		myBigDots;
 	std::list<std::shared_ptr<Cherry>>		myCherry;*/
-
-	std::list<PathmapTile*> myPathmapTiles;
-	std::list<Dot*>			myDots;
-	std::list<BigDot*>		myBigDots;
-	std::list<Cherry*>		myCherry;
-	//
 	
 };
 

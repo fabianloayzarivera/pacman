@@ -15,10 +15,10 @@ using namespace std;
 
 struct myTexture 
 {
-	myTexture(int w, int h, SDL_Texture* tex) : width(w), height(h), texture(tex) {};
+	myTexture(const int w, const int h, SDL_Texture* tex) : width(w), height(h), texture(tex) {};
 	~myTexture() { SDL_DestroyTexture(texture); }
-	int width;
-	int height;
+	const int width;
+	const int height;
 	SDL_Texture* texture;
 };
 
@@ -28,7 +28,7 @@ public:
 	static Drawer* Create(SDL_Window* aWindow, SDL_Renderer* aRenderer);
 	~Drawer(void);
 
-	//void Draw(const char* anImage, int aCellX = 0, int aCellY = 0);
+	//Instead of Drawing an specific image from file. We are going to draw the texture stored in the map with id: aTextureId
 	void Draw(ETextureId aTextureId, const int & aCellX = 0, const int & aCellY = 0) const;
 	void DrawText(const char* aText, int aX, int aY);
 	bool LoadTexture(const char* anImage, ETextureId aTextureId);
@@ -38,7 +38,7 @@ private:
 	Drawer(SDL_Window* aWindow, SDL_Renderer* aRenderer);
 	bool Init();
 	
-	map<ETextureId, myTexture*> myTextures; //map ids and textures CHANGE const char* with ENUM
+	map<ETextureId, myTexture*> myTextures;
 	SDL_Window*		myWindow;
 	SDL_Renderer*	myRenderer;
 	SDL_Surface*	world;

@@ -12,6 +12,7 @@ public:
 	const bool myIsBlockingFlag;
 	const bool myIsGateFlag;
 	bool myIsVisitedFlag;
+	int	 distance;
 
 };
 

@@ -9,12 +9,12 @@ class Avatar : public MovableGameEntity
 public:
 	Avatar(const Vector2f& aPosition);
 	~Avatar(void);
-	//void Draw(Drawer* aDrawer);
 	virtual void Update(float aTime);
 	void	Die();
-	void	FlipFlopTexture();
+	void	FlipFlopTexture(); //Method that will change between open and closed mouth texture
+	bool	CheckIsPortal(const int &nextTileX, const int &nextTileY); //This method could've been virtual in movableentity
 private:
-	
+	int		myCherryCounter;
 
 };
 

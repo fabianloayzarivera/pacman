@@ -1,21 +1,24 @@
 #include "Ghost.h"
+#include "Pacman.h"
 #include "World.h"
 #include "PathmapTile.h"
 #include "Avatar.h"
 
-const Direction DIRECTIONS[4] = { UP, LEFT, DOWN, RIGHT };
+const Direction DIRECTIONS[4] = { UP, LEFT, DOWN, RIGHT }; //Constant container used to get RandomDirections
 
-Ghost::Ghost(const Vector2f& aPosition, Avatar* aAvatar, Direction aDirection, MoveType aMoveType)
-: myStartPosition(aPosition),
-  MovableGameEntity(aPosition, "ghost_32.png", ETextureId::GHOST_GREY, 30.f)
+Ghost::Ghost(const Vector2f& aPosition, Avatar* aAvatar, Direction aDirection, MoveType aMoveType, ETextureId aGhostTexture)
+  : myStartMoveType(aMoveType),
+	myAvatar(aAvatar),
+	myOriginalTexture(aGhostTexture),
+	myDirection(aDirection),
+	myMoveType(aMoveType),
+	MovableGameEntity(aPosition, aGhostTexture, 30.f)
 {
-	myDirection = aDirection;
-	myStartMoveType = myMoveType = aMoveType;
+
 	myIsClaimableFlag = false;
 	myIsDeadFlag = false;
-	myAvatar = aAvatar;
 	myDesiredMovementX = 0;
-	myDesiredMovementY = -1;
+	myDesiredMovementY = 0;
 	myGhostGhostCounter = 0.f;
 }
 
@@ -30,10 +33,15 @@ void Ghost::ChangeClaimableState(bool aIsClaimable)
 		myIsClaimableFlag = aIsClaimable;
 		if (aIsClaimable)
 		{	
-			myGhostGhostCounter = 20.f;
+			myGhostGhostCounter = 10.f;
 			if (myTextureId != ETextureId::GHOST_CLAIMABLE) myTextureId = ETextureId::GHOST_CLAIMABLE;
+			myMoveType = FRIGHTENED;
 		}
-		else if (myTextureId != ETextureId::GHOST_GREY) myTextureId = ETextureId::GHOST_GREY;
+		else if (myTextureId != myOriginalTexture)
+		{
+			myMoveType = CHASE;
+			myTextureId = myOriginalTexture;
+		}
 
 	}
 	
@@ -43,7 +51,7 @@ void Ghost::Die()
 {
 	myIsDeadFlag = true;
 	myPath.clear();
-	myWorld->GetPath(myCurrentTileX, myCurrentTileY, 13, 13, myPath); //optimize this method
+	myGameInstance->GetWorld()->GetPath(myCurrentTileX, myCurrentTileY, 13, 13, myPath); //optimize this method
 	myMoveType = DEAD;
 }
 
@@ -79,7 +87,7 @@ void Ghost::Update(float aTime)  //Check way to refactor world on update
 		case CAGE:
 			if (myPath.empty())
 			{
-				myWorld->GetPath(myCurrentTileX, myCurrentTileY, 13, 10, myPath);
+				myGameInstance->GetWorld()->GetPath(myCurrentTileX, myCurrentTileY, 13, 10, myPath);
 			}
 			myMoveType = LEAVE;
 			break;
@@ -92,7 +100,7 @@ void Ghost::Update(float aTime)  //Check way to refactor world on update
 			}
 			else 
 			{
-				printf("I'M OUT!\n");
+				//printf("I'M OUT!\n");
 				myMoveType = CHASE;
 			}
 			break;
@@ -105,12 +113,20 @@ void Ghost::Update(float aTime)  //Check way to refactor world on update
 			}
 			else
 			{
-				printf("ON PEN!\n");
+				//printf("ON PEN!\n");
 				myIsDeadFlag = false;
 				this->ChangeClaimableState(false);
 				myGhostGhostCounter = 0.f;
 				myMoveType = CAGE;
 			}
+			break;
+		case FRIGHTENED:
+			myDirection = GetRandomDirection();
+			UpdateDirection();
+			nextTileX = GetCurrentTileX() + myDesiredMovementX;
+			nextTileY = GetCurrentTileY() + myDesiredMovementY;
+			if (myGameInstance->GetWorld()->TileIsValid(nextTileX, nextTileY))
+				SetNextTile(nextTileX, nextTileY);
 			break;
 		case CHASE:
 			SearchDirectionToAvatar();
@@ -133,7 +149,7 @@ void Ghost::Update(float aTime)  //Check way to refactor world on update
 
 			
 
-			if (myWorld->TileIsValid(nextTileX, nextTileY))
+			if (myGameInstance->GetWorld()->TileIsValid(nextTileX, nextTileY))
 				SetNextTile(nextTileX, nextTileY);
 
 			myIsDeadFlag = false;
@@ -207,8 +223,7 @@ void Ghost::Update(float aTime)  //Check way to refactor world on update
 		
 	//}
 
-
-	Vector2f destination(myNextTileX * tileSize, myNextTileY * tileSize);
+	Vector2f destination((float)(myNextTileX * tileSize), (float)(myNextTileY * tileSize));
 	Vector2f dir = destination - myPosition;
 
 	float distanceToMove = aTime * mySpeed;
@@ -226,16 +241,20 @@ void Ghost::Update(float aTime)  //Check way to refactor world on update
 	}
 }
 
-void Ghost::SetImage(const char* anImage)
-{
-	myImage = anImage;
-}
+//void Ghost::SetImage(const char* anImage)
+//{
+//	myImage = anImage;
+//}
 
 void Ghost::Reset() 
 {
+	this->myPath.clear();
+	this->myIsDeadFlag = false;
+	this->ChangeClaimableState(false);
 	this->SetPosition(myStartPosition);
+	this->ResetTiles();
 	this->myMoveType = myStartMoveType;
-	this->ResetTiles();	
+	
 }
 
 void Ghost::SearchDirectionToAvatar() 
@@ -281,7 +300,7 @@ void Ghost::SearchDirectionToAvatar()
 			break;
 		}
 		
-		if (myWorld->TileIsValid(tempNextTileX, tempNextTileY) && IsNotOpposite(possibleDirections[i]))
+		if (myGameInstance->GetWorld()->TileIsValid(tempNextTileX, tempNextTileY) && IsNotOpposite(possibleDirections[i]))
 			usableDirections[usable++] = possibleDirections[i];
 	}
 
@@ -368,7 +387,7 @@ Direction Ghost::GetRandomDirection()
 		}
 		if (!CheckIsPortal(tempNextTileX, tempNextTileY))
 		{
-			if (myWorld->TileIsValid(tempNextTileX, tempNextTileY) && IsNotOpposite(randDirection))
+			if (myGameInstance->GetWorld()->TileIsValid(tempNextTileX, tempNextTileY) && IsNotOpposite(randDirection))
 				found = true;
 		}
 		else

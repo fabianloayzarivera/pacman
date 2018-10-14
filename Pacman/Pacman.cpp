@@ -30,29 +30,28 @@ Pacman::Pacman(Drawer* aDrawer)
 , myScore(0)
 , myFps(0)
 , myLives(3)
+, myGameOver(false)
+, myGameWon(false)
+//, myCherryCounter(0)
 //, myGhostGhostCounter(0.f)
 {
 	myWorld = new World();
 	Avatar* aAvatar = new Avatar(Vector2f(13*22,22*22));
 	
-	Ghost*  aRedGhost = new Ghost(Vector2f(13 * 22, 10 * 22), aAvatar, LEFT, CHASE);
-	aRedGhost->SetWorld(myWorld);
+	Ghost*  aRedGhost = new Ghost(Vector2f(13 * 22, 10 * 22), aAvatar, LEFT, CHASE, GHOST_RED);
 	myEntities.push_back(aRedGhost);
 
-	Ghost*  aBlueGhost = new Ghost(Vector2f(15 * 22, 13 * 22), aAvatar, UP, CAGE);
-	aBlueGhost->SetWorld(myWorld);
+	Ghost*  aBlueGhost = new Ghost(Vector2f(15 * 22, 13 * 22), aAvatar, UP, CAGE, GHOST_BLUE);
 	myEntities.push_back(aBlueGhost);
 
-	Ghost*  aOrangeGhost = new Ghost(Vector2f(13 * 22, 13 * 22), aAvatar, UP, CAGE);
-	aOrangeGhost->SetWorld(myWorld);
+	Ghost*  aOrangeGhost = new Ghost(Vector2f(13 * 22, 13 * 22), aAvatar, UP, CAGE, GHOST_ORANGE);
 	myEntities.push_back(aOrangeGhost);
 
-	Ghost*  aPinkGhost = new Ghost(Vector2f(11 * 22, 13 * 22), aAvatar, DOWN, CAGE);
-	aPinkGhost->SetWorld(myWorld);
+	Ghost*  aPinkGhost = new Ghost(Vector2f(11 * 22, 13 * 22), aAvatar, DOWN, CAGE, GHOST_PINK);
 	myEntities.push_back(aPinkGhost);
 
 
-	aAvatar->SetWorld(myWorld);	
+	//aAvatar->SetWorld(myWorld);	
 	myAvatar = aAvatar;	
 	myEntities.push_back(aAvatar);
 	
@@ -61,30 +60,50 @@ Pacman::Pacman(Drawer* aDrawer)
 
 Pacman::~Pacman(void)
 {
-	//Destroy list entities, avatar, drawer, world, etc
+	//Delete list entities, avatar,world, etc
+	for (std::list<MovableGameEntity*>::iterator list_iter = myEntities.begin(); list_iter != myEntities.end(); list_iter++)
+	{
+		delete(*list_iter);
+	}
+	myEntities.clear();
+	delete(myWorld);
 }
 
 bool Pacman::Init()
 {
+	//*********** Load all the textures just once and store them in a map ****//
 	
 	myDrawer->LoadTexture("Big_Dot_32.png", ETextureId::BIG_DOT);
 	myDrawer->LoadTexture("Small_Dot_32.png", ETextureId::DOT);
-	myDrawer->LoadTexture("ghost_32.png", ETextureId::GHOST_GREY);
+	myDrawer->LoadTexture("ghost_32_red.png", ETextureId::GHOST_RED);
+	myDrawer->LoadTexture("ghost_32_cyan.png", ETextureId::GHOST_BLUE);
+	myDrawer->LoadTexture("ghost_32_orange.png", ETextureId::GHOST_ORANGE);
+	myDrawer->LoadTexture("ghost_32_pink.png", ETextureId::GHOST_PINK);
 	myDrawer->LoadTexture("Ghost_Dead_32.png", ETextureId::GHOST_DEAD);
 	myDrawer->LoadTexture("Ghost_Vulnerable_32.png", ETextureId::GHOST_CLAIMABLE);	
 	myDrawer->LoadTexture("open_right_32.png", ETextureId::AVATAR_OPEN_RIGHT);
 	myDrawer->LoadTexture("closed_right_32.png", ETextureId::AVATAR_CLOSED_RIGHT);
 	myDrawer->LoadTexture("open_left_32.png", ETextureId::AVATAR_OPEN_LEFT);
+	myDrawer->LoadTexture("closed_left_32.png", ETextureId::AVATAR_CLOSED_LEFT);
 	myDrawer->LoadTexture("open_up_32.png", ETextureId::AVATAR_OPEN_UP);
+	myDrawer->LoadTexture("closed_up_32.png", ETextureId::AVATAR_CLOSED_UP);
 	myDrawer->LoadTexture("open_down_32.png", ETextureId::AVATAR_OPEN_DOWN);
+	myDrawer->LoadTexture("closed_down_32.png", ETextureId::AVATAR_CLOSED_DOWN);
 	myDrawer->LoadTexture("playfield.png", ETextureId::PLAYFIELD);
+	myDrawer->LoadTexture("ghost_32.png", ETextureId::CHERRY);
 	myDrawer->LoadFont("freefont-ttf\\sfd\\FreeMono.ttf", 24);
+	
+	for (std::list<MovableGameEntity*>::iterator list_iter = myEntities.begin(); list_iter != myEntities.end(); list_iter++)
+	{
+		(*list_iter)->SetGameInstance(this);
+	}
+
 	myWorld->Init();
 
 	return true;
 }
 
-bool Pacman::Update(float aTime)
+bool Pacman::Update(const float aTime)
 {
 	if (!UpdateInput())
 		return false;
@@ -92,18 +111,19 @@ bool Pacman::Update(float aTime)
 	if (CheckEndGameCondition())
 	{
 		//myDrawer->DrawText("You win!", "freefont-ttf\\sfd\\FreeMono.ttf", 20, 70);
-		myDrawer->DrawText("You win!", 20, 70);
+		myGameWon = true;
 		return true;
 	}
 	else if (myLives <= 0)
 	{
 		//myDrawer->DrawText("You lose!", "freefont-ttf\\sfd\\FreeMono.ttf", 20, 70);	
-		myDrawer->DrawText("You lose!", 20, 70);
+		myGameOver = true;
+		//myDrawer->DrawText("You lose!", 20, 70);
 		return true;
 	}
 
 	//MoveAvatar();
-	myAvatar->SetMyNextMovement(myNextMovement);
+	//myAvatar->SetMyNextMovement(myNextMovement);  //Get last input 
 	//myAvatar->Update(aTime);
 	//myGhost->Update(aTime, myWorld);
 
@@ -113,18 +133,33 @@ bool Pacman::Update(float aTime)
 	}
 
 	//Move this to update avatar ---------------------
-	if (myWorld->HasIntersectedDot(myAvatar->GetPosition()))
+	/*if (myWorld->HasIntersectedDot(myAvatar->GetPosition()))
+	{
+		myCherryCounter++;
 		myScore += 10;
+		if (myCherryCounter >= 70)
+		{
+			myWorld->SpawnCherry();
+			myCherryCounter = 0;
+		}
+			
+	}*/
+	
+	/*if (myWorld->HasIntersectedCherry(myAvatar->GetPosition())) 
+	{
+		myScore += 200;
+	}*/
 
 	//myGhostGhostCounter -= aTime;
 
-	if (myWorld->HasIntersectedBigDot(myAvatar->GetPosition()))
-	{
-		myScore += 20;
-		//myGhostGhostCounter = 20.f;
-		//myGhost->ChangeClaimableState(true);
-		ChangeGhostsClaimable(true);
-	}
+	//if (myWorld->HasIntersectedBigDot(myAvatar->GetPosition()))
+	//{
+	//	myScore += 20;
+	//	//myGhostGhostCounter = 20.f;
+	//	//myGhost->ChangeClaimableState(true);
+	//	ChangeGhostsClaimable(true);
+	//}
+
 	//----------------------------------------------
 	//printf("%f\n", myGhostGhostCounter);
 	//Move this to Ghost update ------------------------
@@ -192,7 +227,7 @@ bool Pacman::UpdateInput()
 //	}*/
 //}
 
-bool Pacman::CheckEndGameCondition()
+const bool Pacman::CheckEndGameCondition()
 {
 	return myWorld->CheckEndGame();
 }
@@ -233,6 +268,11 @@ bool Pacman::Draw()
 	fpsString = fpsStream.str();
 	myDrawer->DrawText(fpsString.c_str(), 930, 50);
 
+	if(myGameWon)
+		myDrawer->DrawText("You win!", 20, 100);
+	if(myGameOver)
+		myDrawer->DrawText("You lose!", 20, 100);
+
 	//printf("%s\n", fpsString.c_str());
 	return true;
 }
@@ -263,9 +303,9 @@ void Pacman::CheckGhostsCollision()
 					//myAvatar->SetPosition(Vector2f(13 * 22, 22 * 22));
 					//myAvatar->ResetTiles();
 					myNextMovement = Vector2f(-1.f, 0.f);
+					ResetGhosts();
 					myAvatar->Die();
 					//aGhost->SetPosition(Vector2f(13 * 22, 13 * 22));
-					ResetGhosts();
 					return;
 					
 				}

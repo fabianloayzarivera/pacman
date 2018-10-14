@@ -1,9 +1,8 @@
 #include "GameEntity.h"
 #include "Drawer.h"
 
-GameEntity::GameEntity(const Vector2f& aPosition, const char* anImage, ETextureId aTextureId)
+GameEntity::GameEntity(const Vector2f& aPosition, ETextureId aTextureId)
 :myPosition(aPosition)
-,myImage(anImage)
 ,myIdMarkedForDeleteFlag(false)
 ,myTextureId(aTextureId)
 {
@@ -11,7 +10,6 @@ GameEntity::GameEntity(const Vector2f& aPosition, const char* anImage, ETextureI
 
 GameEntity::~GameEntity(void)
 {
-	//SDL_FreeSurface(const_cast<SDL_Surface* >(aSurface)); //Use is marked for delete?
 }
 
 bool GameEntity::Intersect(GameEntity* aGameEntity)
